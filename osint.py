@@ -14,7 +14,37 @@ FACEBOOK_BASE_SEARCH_URL = "https://www.facebook.com/search/"
 UNAME_INFORMATION_MAP = {
     "timeline":"",
     "about":"about",
-    "employment":"about?section=work"
+    "employment":"about?section=work",
+    "education":"about?section=education",
+    "locations":"about?section=living",
+    "contact info":"about?section=contact-info",
+    "basic info":"about?section=basic-info",
+    "relationships":"about?section=relationships",
+    "family":"about?section=family",
+    "biography":"about?section=bio",
+    "life events":"about?section=year-overview",
+    "friends":"friends",
+    "following":"following",
+    "photos":"photos",
+    "photos albums":"photos_albums",
+    "videos":"videos",
+    "reels":"reels",
+    "check-ins":"places_visited",
+    "visits":"map",
+    "recent check-ins":"places_recent",
+    "sports":"sports",
+    "music":"music",
+    "movies":"movies",
+    "tv":"tv",
+    "books":"books",
+    "apps & games":"games",
+    "likes":"likes",
+    "events":"events",
+    "facts":"did_you_know",
+    "reviews":"reviews",
+    "reviews given":"reviews_given",
+    "reviews written":"reviews_written",
+    "notes":"notes"
 }
 
 
