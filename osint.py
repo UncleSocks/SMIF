@@ -6,7 +6,7 @@ from urllib.parse import quote
 
 
 root = tk.Tk()
-root.title("SocMed OSINT Helper")
+root.title("Social Media Intelligence Filter-inator")
 
 
 
@@ -31,7 +31,7 @@ class ConstructFbUrl:
         self.keyword = (quote(keyword_entry.get().lower()) if keyword_entry.get() else self.selected_type)
         self.selected_year = select_year.get().lower()
 
-    def construct_user_id(self, user_id):
+    def construct_user_url(self, user_id):
         if self.selected_year == "top":
             raw_filter = f'{{"rp_author":"{{\\"name\\":\\"author\\",\\"args\\":\\"{user_id}\\"}}"}}'
         else:
@@ -41,7 +41,7 @@ class ConstructFbUrl:
         new_fb_url = FACEBOOK_BASE_URL + f"{self.selected_type}" + f"?q={self.keyword}" + f"&epa=FILTERS&filters={encoded_filter}"
         return new_fb_url
     
-    def construct_location_id(self, location_id):
+    def construct_location_url(self, location_id):
         if self.selected_type == "events":
             raw_filter = f'{{"rp_events_location":"{{\\"name\\":\\"filter_events_location\\",\\"args\\":\\"{location_id}\\"}}"}}'
         
@@ -60,19 +60,37 @@ class ConstructFbUrl:
         encoded_filter = encode(raw_filter)
         new_fb_url = FACEBOOK_BASE_URL + f"{self.selected_type}" + f"?q={self.keyword}" + f"&epa=FILTERS&filters={encoded_filter}"
         return new_fb_url
+    
+    def construct_profile_url(self, id, profile_id, profile):
+        profile_map = {
+            "employer id":{"filter":"employer", "name":"users_employer"}, 
+            "city id":{"filter":"city", "name":"users_location"}, 
+            "school id":{"filter":"school", "name":"users_school"}
+            }
+        
+        raw_filter = f'{{"{profile_map[id]["filter"]}":"{{\\"name\\":\\"{profile_map[id]["name"]}\\",\\"args\\":\\"{profile_id}\\"}}"}}'
+        encoded_filter = encode(raw_filter)
+        new_fb_url = FACEBOOK_BASE_URL + f"people/?q={profile}" + f"&epa=FILTERS&filters={encoded_filter}"
+        return new_fb_url
 
     def construct_url(self):
         id  = id_types.get().lower()
         if id == "user id":
             user_id = id_entry.get()
             self._capture_keyword_and_year()
-            new_fb_url = self.construct_user_id(user_id)
+            new_fb_url = self.construct_user_url(user_id)
             return new_fb_url
 
         elif id == "location id":
             location_id = id_entry.get()
             self._capture_keyword_and_year()
-            new_fb_url = self.construct_location_id(location_id)
+            new_fb_url = self.construct_location_url(location_id)
+            return new_fb_url
+        
+        elif id == "employer id" or id == "city id" or id == "school id":
+            profile_id = id_entry.get()
+            profile = profile_entry.get()
+            new_fb_url = self.construct_profile_url(id, profile_id, profile)
             return new_fb_url
 
 
