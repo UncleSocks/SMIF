@@ -118,9 +118,14 @@ class ConstructFbUrl:
         new_fb_url = FACEBOOK_BASE_SEARCH_URL + f"people/?q={profile}" + f"&epa=FILTERS&filters={encoded_filter}"
         return new_fb_url
     
-    def construct_username_url(self, username, information):
-        new_fb_url = FACEBOOK_BASE_URL + f"{username}/" + f"{UNAME_INFORMATION_MAP[information]}"
-        return new_fb_url
+    def construct_username_url(self, username):
+        information = uname_information.get().lower()
+        if not information:
+            output = "Select user information to search"
+            return output
+        else:
+            new_fb_url = FACEBOOK_BASE_URL + f"{username}/" + f"{UNAME_INFORMATION_MAP[information]}"
+            return new_fb_url
         
 
     def construct_url(self):
@@ -145,8 +150,7 @@ class ConstructFbUrl:
             return new_fb_url
         
         elif username:
-            information = uname_information.get().lower()
-            new_fb_url = self.construct_username_url(username, information)
+            new_fb_url = self.construct_username_url(username)
             return new_fb_url
             
 
@@ -155,6 +159,7 @@ class ConstructFbUrl:
 
 
 def generate_url():
+        output_label.config(text="")
         selected_type = search_types.get().lower()
         if selected_type:
             fb_url = ConstructFbUrl(selected_type).construct_url()
@@ -185,7 +190,7 @@ def display_ids(event=None):
         username_entry.delete(0, tk.END)
         username_entry.config(state="disabled")
         
-        uname_information.delete(0, tk.END)
+        uname_information.set("")
         uname_information.config(state="disabled")
 
     elif selected_type == "profiles":
@@ -200,6 +205,15 @@ def display_ids(event=None):
         id_types.config(values=["Location ID"], state="readonly")
         select_year.set("")
         select_year.config(state="disabled")
+
+        profile_entry.delete(0, tk.END)
+        profile_entry.config(state="disabled")
+        
+        username_entry.delete(0, tk.END)
+        username_entry.config(state="disabled")
+        
+        uname_information.set("")
+        uname_information.config(state="disabled")
 
     elif selected_type == "user info":
         username_entry.config(state="normal")
