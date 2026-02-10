@@ -11,6 +11,11 @@ root.title("Social Media Intelligence Filter-inator")
 
 FACEBOOK_BASE_URL = "https://www.facebook.com/"
 FACEBOOK_BASE_SEARCH_URL = "https://www.facebook.com/search/"
+UNAME_INFORMATION = ["Timeline", "About", "Employment", "Education", "Locations", "Contact Info", 
+                     "Basic Info", "Relationships", "Family", "Biography", "Life Events", "Friends",
+                     "Following", "Photos", "Photos Albums", "Videos", "Reels", "Check-ins", "Visits",
+                     "Recent Check-ins", "Sports", "Music", "Movies", "TV", "Books", "Apps & Games",
+                     "Likes", "Events", "Facts", "Reviews","Reviews Given", "Reviews Written", "Notes"]
 UNAME_INFORMATION_MAP = {
     "timeline":"",
     "about":"about",
@@ -46,6 +51,9 @@ UNAME_INFORMATION_MAP = {
     "reviews written":"reviews_written",
     "notes":"notes"
 }
+SEARCH = ["top", "posts", "people", "photos", "videos",
+          "marketplace", "pages", "places", "groups",
+          "apps", "events", "links", "watch"]
 
 
 
@@ -123,13 +131,19 @@ class ConstructFbUrl:
         return new_fb_url
     
     def construct_username_url(self, username):
-        information = uname_information.get().lower()
+        uname_information = information.get().lower()
         if not information:
             output = "Select user information to search"
             return output
         else:
-            new_fb_url = FACEBOOK_BASE_URL + f"{username}/" + f"{UNAME_INFORMATION_MAP[information]}"
+            new_fb_url = FACEBOOK_BASE_URL + f"{username}/" + f"{UNAME_INFORMATION_MAP[uname_information]}"
             return new_fb_url
+        
+    def construct_search_url(self):
+        search_information = information.get().lower()
+        print(search_information)
+        new_fb_url = FACEBOOK_BASE_SEARCH_URL + f"{search_information}" + f"/?q={self.keyword}" 
+        return new_fb_url
         
 
     def construct_url(self):
@@ -161,7 +175,12 @@ class ConstructFbUrl:
             self._capture_keyword_and_year()
             new_fb_url = self.construct_places_url()
             return new_fb_url
-
+        
+        elif self.selected_type == "search":
+            self._capture_keyword_and_year()
+            new_fb_url = self.construct_search_url()
+            return new_fb_url
+ 
 
 
 
@@ -198,8 +217,8 @@ def display_ids(event=None):
         username_entry.delete(0, tk.END)
         username_entry.config(state="disabled")
         
-        uname_information.set("")
-        uname_information.config(state="disabled")
+        information.set("")
+        information.config(state="disabled")
 
     elif selected_type == "people":
         id_types.config(values=["Employer ID", "City ID", "School ID"], state="readonly")
@@ -219,8 +238,8 @@ def display_ids(event=None):
         username_entry.delete(0, tk.END)
         username_entry.config(state="disabled")
         
-        uname_information.set("")
-        uname_information.config(state="disabled")
+        information.set("")
+        information.config(state="disabled")
 
     elif selected_type == "events":
         id_types.config(values=["Location ID"], state="readonly")
@@ -233,18 +252,28 @@ def display_ids(event=None):
         username_entry.delete(0, tk.END)
         username_entry.config(state="disabled")
         
-        uname_information.set("")
-        uname_information.config(state="disabled")
+        information.set("")
+        information.config(state="disabled")
 
     elif selected_type == "user info":
         username_entry.config(state="normal")
-        uname_information.config(state="readonly")
+        information.config(state="readonly", values=UNAME_INFORMATION)
         id_entry.delete(0, tk.END)
         id_entry.config(state="disabled")
         keyword_entry.delete(0, tk.END)
         keyword_entry.config(state="disabled")
         select_year.set("")
         select_year.config(state="disabled")
+
+    elif selected_type == "search":
+        keyword_entry.config(state="normal")
+        information.config(state="readonly", values=SEARCH)
+        id_entry.delete(0, tk.END)
+        id_entry.config(state="disabled")
+        select_year.set("")
+        select_year.config(state="disabled")
+        username_entry.delete(0, tk.END)
+        username_entry.config(state="disabled")
 
     else:
         id_types.config(state="disabled")
@@ -310,21 +339,10 @@ username_label.grid(row=3, column=0, padx=10, pady=15)
 username_entry = tk.Entry(root, state="disabled")
 username_entry.grid(row=3, column=1)
 
-uname_information_label = tk.Label(root, text="Information:")
-uname_information_label.grid(row=3, column=2, padx=10)
-uname_information = ttk.Combobox(root,
-                                 values=["Timeline", "About", "Employment", 
-                                         "Education", "Locations", "Contact Info",
-                                         "Basic Info", "Relationships", "Family",
-                                         "Biography", "Life Events", "Friends",
-                                         "Following", "Photos", "Photos Albums",
-                                         "Videos", "Reels", "Check-ins", "Visits",
-                                         "Recent Check-ins", "Sports", "Music",
-                                         "Movies", "TV", "Books", "Apps & Games",
-                                         "Likes", "Events", "Facts", "Reviews",
-                                         "Reviews Given", "Reviews Written", "Notes"],
-                                         state="disabled")
-uname_information.grid(row=3, column=3)
+information_label = tk.Label(root, text="Information:")
+information_label.grid(row=3, column=2, padx=10)
+information = ttk.Combobox(root, state="disabled")
+information.grid(row=3, column=3)
 
 
 output_frame = tk.Frame(root)
