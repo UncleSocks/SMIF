@@ -354,8 +354,8 @@ information.grid(row=3, column=3, sticky="W")
 
 
 output_frame = tk.Frame(root)
-output_frame.grid(row=5, column=0, columnspan=4, sticky="E", padx=10)
-output_label = tk.Label(output_frame, wraplength=500, justify="left", anchor="e")
+output_frame.grid(row=5, column=0, columnspan=4, sticky="W", padx=10)
+output_label = tk.Label(output_frame, wraplength=500, justify="left", anchor="w")
 output_label.pack(fill="x")
 
 
