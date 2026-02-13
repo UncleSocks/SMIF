@@ -186,12 +186,14 @@ class ConstructFbUrl:
 
 
 def generate_url():
-        output_label.config(text="")
+        output_label.delete("1.0", tk.END)
         selected_type = search_types.get().lower()
         if selected_type:
             fb_url = ConstructFbUrl(selected_type).construct_url()
             pyperclip.copy(fb_url)
-            output_label.config(text=fb_url)
+            output_label.config(state="normal")
+            output_label.insert(tk.END, fb_url)
+            output_label.config(state="disabled")
         return
 
 
@@ -263,7 +265,7 @@ def display_ids(event=None):
         information.set("")
         information.config(state="disabled")
 
-    elif selected_type == "user info":
+    elif selected_type == "account":
         username_entry.config(state="normal")
         information.config(state="readonly", values=UNAME_INFORMATION)
         id_entry.delete(0, tk.END)
@@ -310,7 +312,7 @@ search_label = tk.Label(root, text="Search Type:")
 search_label.grid(row=0, column=0, padx=10, pady=15, sticky="E")
 
 search_types = ttk.Combobox(root,
-                            values=["Posts", "Photos", "Videos", "People", "Places", "Events", "User Info", "Search"],
+                            values=["Posts", "Photos", "Videos", "People", "Places", "Events", "Account", "Search"],
                             state="readonly")
 search_types.grid(row=0, column=1, sticky="W")
 search_types.bind("<<ComboboxSelected>>", display_ids)
@@ -322,7 +324,7 @@ id_types = ttk.Combobox(root, state="disabled")
 id_types.grid(row=1, column=1, sticky="W")
 id_types.bind("<<ComboboxSelected>>", get_ids)
 
-id_entry_label = tk.Label(root, text="Enter ID:")
+id_entry_label = tk.Label(root, text="ID:")
 id_entry_label.grid(row=1, column=2, padx=10, sticky="E")
 id_entry = tk.Entry(root, state="disabled")
 id_entry.grid(row=1, column=3, sticky="W")
@@ -342,21 +344,23 @@ year_label.grid(row=2, column=2, padx=10, sticky="E")
 select_year = ttk.Combobox(root, values=["Top", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010"],state="disabled")
 select_year.grid(row=2, column=3, sticky="W")
 
-username_label = tk.Label(root, text="Username:")
+username_label = tk.Label(root, text="Account:")
 username_label.grid(row=3, column=0, padx=10, pady=15, sticky="E")
 username_entry = tk.Entry(root, state="disabled")
 username_entry.grid(row=3, column=1, sticky="W")
 
-information_label = tk.Label(root, text="Information:")
+information_label = tk.Label(root, text="Section:")
 information_label.grid(row=3, column=2, padx=10, sticky="E")
 information = ttk.Combobox(root, state="disabled")
 information.grid(row=3, column=3, sticky="W")
 
 
 output_frame = tk.Frame(root)
-output_frame.grid(row=5, column=0, columnspan=4, sticky="W", padx=10)
-output_label = tk.Label(output_frame, wraplength=500, justify="left", anchor="w")
-output_label.pack(fill="x")
+output_frame.grid(row=5, column=0, columnspan=6, sticky="EW", padx=20)
+output_label = tk.Text(output_frame, wrap="char")
+output_label.pack(fill="both")
+output_label.config(height=15)
+output_label.config(state="disabled")
 
 
 display_ids()
@@ -375,5 +379,5 @@ generate_button.grid(row=4, column=0, columnspan=2, padx=5, pady=20)
 
 
 
-root.geometry("600x400")
+root.geometry("690x500")
 root.mainloop()
