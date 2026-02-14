@@ -186,12 +186,12 @@ class ConstructFbUrl:
 
 
 def generate_url():
-        output_label.delete("1.0", tk.END)
         selected_type = search_types.get().lower()
         if selected_type:
             fb_url = ConstructFbUrl(selected_type).construct_url()
             pyperclip.copy(fb_url)
             output_label.config(state="normal")
+            output_label.delete("1.0", "end")
             output_label.insert(tk.END, fb_url)
             output_label.config(state="disabled")
         return
