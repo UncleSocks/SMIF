@@ -1,22 +1,33 @@
 import base64
 import tkinter as tk
 from tkinter import ttk
+
 import pyperclip
 from urllib.parse import quote
 
 
-root = tk.Tk()
-root.title("Social Media Intelligence Filter-inator")
 
+WIDGET_LABEL_MAP = {
+    "search_type":"Search Type:",
+    "id_type":"ID Type:",
+    "id_value":"ID:",
+    "keyword":"Keyword:",
+    "year":"Year:",
+    "account":"Account:",
+    "section":"Section:",
+    "generate_button":"Generate URL"
+}
 
 FACEBOOK_BASE_URL = "https://www.facebook.com/"
 FACEBOOK_BASE_SEARCH_URL = "https://www.facebook.com/search/"
-#UNAME_INFORMATION = ["Timeline", "About", "Employment", "Education", "Locations", "Contact Info", 
-#                     "Basic Info", "Relationships", "Family", "Biography", "Life Events", "Friends",
-#                     "Following", "Photos", "Photos Albums", "Videos", "Reels", "Check-ins", "Visits",
-#                     "Recent Check-ins", "Sports", "Music", "Movies", "TV", "Books", "Apps & Games",
-#                     "Likes", "Events", "Facts", "Reviews","Reviews Given", "Reviews Written", "Notes"]
-UNAME_INFORMATION_MAP = {
+SEARCH_TYPE_SELECTION = ["Posts", "Photos", "Videos", "People", "Places", 
+                         "Events", "Account", "Search"]
+
+YEAR_SELECTION = ["Top", "2025", "2024", "2023", "2022", "2021", 
+                  "2020", "2019", "2018", "2017", "2016", "2015", 
+                  "2014", "2013", "2012", "2011", "2010"]
+
+ACCOUNT_INFORMATION_MAP = {
     "Timeline":"",
     "About":"about",
     "Intro":"directory_intro",
@@ -54,335 +65,231 @@ UNAME_INFORMATION_MAP = {
     "Reviews Written":"reviews_written",
     "Notes":"notes"
 }
-SEARCH = ["top", "posts", "people", "photos", "videos",
-          "marketplace", "pages", "places", "groups",
-          "apps", "events", "links", "watch"]
 
+SEARCH_QUERY_SELECTION = ["top", "posts", "people", "photos", "videos", 
+                          "marketplace", "pages", "places", "groups",
+                          "apps", "events", "links", "watch"]
 
-
-def encode(filter_string):
-    string_bytes = filter_string.encode('ascii')
-    baase64_bytes = base64.b64encode(string_bytes)
-    base64_string = baase64_bytes.decode('ascii')
-    return base64_string
-
-
-class ConstructFbUrl:
-
-    def __init__ (self, selected_type):
-        self.selected_type = selected_type
-        self.construct_url()
-
-    def _capture_keyword_and_year(self):
-        self.keyword = (quote(keyword_entry.get().lower()) if keyword_entry.get() else self.selected_type)
-        self.selected_year = select_year.get().lower()
-
-    def construct_user_url(self, user_id=None):
-        
-        if not user_id:
-            output = "Unable to generate URL. Enter a user ID."
-            return output
-
-        if self.selected_year == "top":
-            raw_filter = f'{{"rp_author":"{{\\"name\\":\\"author\\",\\"args\\":\\"{user_id}\\"}}"}}'
-        else:
-            raw_filter = f'{{"rp_author":"{{\\"name\\":\\"author\\",\\"args\\":\\"{user_id}\\"}}","rp_creation_time":"{{\\"name\\":\\"creation_time\\",\\"args\\":\\"{{\\\\\\"start_year\\\\\\":\\\\\\"{self.selected_year}\\\\\\",\\\\\\"start_month\\\\\\":\\\\\\"{self.selected_year}-1\\\\\\",\\\\\\"end_year\\\\\\":\\\\\\"{self.selected_year}\\\\\\",\\\\\\"end_month\\\\\\":\\\\\\"{self.selected_year}-12\\\\\\",\\\\\\"start_day\\\\\\":\\\\\\"{self.selected_year}-1-1\\\\\\",\\\\\\"end_day\\\\\\":\\\\\\"{self.selected_year}-12-31\\\\\\"}}\\"}}"}}'
-        
-        encoded_filter = encode(raw_filter)
-        new_fb_url = FACEBOOK_BASE_SEARCH_URL + f"{self.selected_type}" + f"?q={self.keyword}" + f"&epa=FILTERS&filters={encoded_filter}"
-        return new_fb_url
-    
-    def construct_location_url(self, location_id=None):
-        
-        if not location_id:
-            output = "Unable to generate URL. Enter a location ID."
-            return output
-
-        if self.selected_type == "events":
-            raw_filter = f'{{"rp_events_location":"{{\\"name\\":\\"filter_events_location\\",\\"args\\":\\"{location_id}\\"}}"}}'
-        
-        elif self.selected_type == "posts":
-            if self.selected_year == "top":
-                raw_filter = f'{{"rp_location":"{{\\"name\\":\\"location\\",\\"args\\":\\"{location_id}\\"}}"}}'
-            else:
-                raw_filter = f'{{"rp_location":"{{\\"name\\":\\"location\\",\\"args\\":\\"{location_id}\\"}}","rp_creation_time":"{{\\"name\\":\\"creation_time\\",\\"args\\":\\"{{\\\\\\"start_year\\\\\\":\\\\\\"{self.selected_year}\\\\\\",\\\\\\"start_month\\\\\\":\\\\\\"{self.selected_year}-1\\\\\\",\\\\\\"end_year\\\\\\":\\\\\\"{self.selected_year}\\\\\\",\\\\\\"end_month\\\\\\":\\\\\\"{self.selected_year}-12\\\\\\",\\\\\\"start_day\\\\\\":\\\\\\"{self.selected_year}-1-1\\\\\\",\\\\\\"end_day\\\\\\":\\\\\\"{self.selected_year}-12-31\\\\\\"}}\\"}}"}}'
-
-        elif self.selected_type != "posts" and self.selected_year == "top":
-             raw_filter = f'{{"rp_author":"{{\\"name\\":\\"location\\",\\"args\\":\\"{location_id}\\"}}"}}'
-
-        else:
-            raw_filter = f'{{"rp_author":"{{\\"name\\":\\"location\\",\\"args\\":\\"{location_id}\\"}}","rp_creation_time":"{{\\"name\\":\\"creation_time\\",\\"args\\":\\"{{\\\\\\"start_year\\\\\\":\\\\\\"{self.selected_year}\\\\\\",\\\\\\"start_month\\\\\\":\\\\\\"{self.selected_year}-1\\\\\\",\\\\\\"end_year\\\\\\":\\\\\\"{self.selected_year}\\\\\\",\\\\\\"end_month\\\\\\":\\\\\\"{self.selected_year}-12\\\\\\",\\\\\\"start_day\\\\\\":\\\\\\"{self.selected_year}-1-1\\\\\\",\\\\\\"end_day\\\\\\":\\\\\\"{self.selected_year}-12-31\\\\\\"}}\\"}}"}}'
-
-        encoded_filter = encode(raw_filter)
-        new_fb_url = FACEBOOK_BASE_SEARCH_URL + f"{self.selected_type}" + f"?q={self.keyword}" + f"&epa=FILTERS&filters={encoded_filter}"
-        return new_fb_url
-    
-    def construct_people_url(self, id, profile_id):
-        profile_map = {
-            "employer id":{"filter":"employer", "name":"users_employer"}, 
-            "city id":{"filter":"city", "name":"users_location"}, 
-            "school id":{"filter":"school", "name":"users_school"}
-            }
-        
-        raw_filter = f'{{"{profile_map[id]["filter"]}":"{{\\"name\\":\\"{profile_map[id]["name"]}\\",\\"args\\":\\"{profile_id}\\"}}"}}'
-        encoded_filter = encode(raw_filter)
-        new_fb_url = FACEBOOK_BASE_SEARCH_URL + f"people/?q={self.keyword}" + f"&epa=FILTERS&filters={encoded_filter}"
-        return new_fb_url
-    
-    def construct_places_url(self):
-        new_fb_url = FACEBOOK_BASE_SEARCH_URL + f"places/?q={self.keyword}" 
-        return new_fb_url
-    
-    def construct_username_url(self, username):
-        uname_information = information.get()
-        if not information:
-            output = "Select user information to search"
-            return output
-        else:
-            new_fb_url = FACEBOOK_BASE_URL + f"{username}/" + f"{UNAME_INFORMATION_MAP[uname_information]}"
-            return new_fb_url
-        
-    def construct_search_url(self):
-        search_information = information.get().lower()
-        print(search_information)
-        new_fb_url = FACEBOOK_BASE_SEARCH_URL + f"{search_information}" + f"/?q={self.keyword}" 
-        return new_fb_url
-        
-
-    def construct_url(self):
-        id = id_types.get().lower()
-        username = username_entry.get().lower()
-        if id == "user id":
-            user_id = id_entry.get()
-            self._capture_keyword_and_year()
-            new_fb_url = self.construct_user_url(user_id)
-            return new_fb_url
-
-        elif id == "location id":
-            location_id = id_entry.get()
-            self._capture_keyword_and_year()
-            new_fb_url = self.construct_location_url(location_id)
-            return new_fb_url
-        
-        elif id == "employer id" or id == "city id" or id == "school id":
-            profile_id = id_entry.get()
-            self._capture_keyword_and_year()
-            new_fb_url = self.construct_people_url(id, profile_id)
-            return new_fb_url
-        
-        elif username:
-            new_fb_url = self.construct_username_url(username)
-            return new_fb_url
-        
-        elif self.selected_type == "places":
-            self._capture_keyword_and_year()
-            new_fb_url = self.construct_places_url()
-            return new_fb_url
-        
-        elif self.selected_type == "search":
-            self._capture_keyword_and_year()
-            new_fb_url = self.construct_search_url()
-            return new_fb_url
- 
-
-
+POSTS_PHOTOS_VIDEOS_ID_TYPES = ["User ID", "Location ID"]
+PEOPLE_ID_TYPES = ["Employer ID", "City ID", "School ID"]
+EVENTS_ID_TYPES = ["Location ID"]
 
 
 def generate_url():
-        selected_type = search_types.get().lower()
-        if selected_type:
-            fb_url = ConstructFbUrl(selected_type).construct_url()
-            pyperclip.copy(fb_url)
-            output_label.config(state="normal")
-            output_label.delete("1.0", "end")
-            output_label.insert(tk.END, fb_url)
-            output_label.config(state="disabled")
-        return
-
-
-def display_ids(event=None):
-
-    id_types.set("")
-    id_types.config(state="disabled")
-    #id_entry.delete(0, tk.END)
-    #id_entry.config(state="disabled")
-
-    selected_type = search_types.get().lower()
-
-    if selected_type == "posts"  or selected_type == "photos" \
-        or selected_type == "videos":
-        id_types.config(value=["User ID", "Location ID"], state="readonly")
-
-        select_year.config(state="readonly")
-        select_year.set("Top")
-
-        #profile_entry.delete(0, tk.END)
-        #profile_entry.config(state="disabled")
-        
-        username_entry.delete(0, tk.END)
-        username_entry.config(state="disabled")
-        
-        information.set("")
-        information.config(state="disabled")
-
-    elif selected_type == "people":
-        id_types.config(values=["Employer ID", "City ID", "School ID"], state="readonly")
-        #profile_entry.config(state="normal")
-        keyword_entry.config(state="normal")
-        select_year.set("")
-        select_year.config(state="disabled")
-
-        username_entry.delete(0, tk.END)
-        username_entry.config(state="disabled")
-        
-        information.set("")
-        information.config(state="disabled")
-
-    elif selected_type == "places":
-        keyword_entry.config(state="normal")
-        id_types.set("")
-        id_types.config(state="disabled")
-        id_entry.delete(0, tk.END)
-        id_entry.config(state="disabled")
-        
-        select_year.set("")
-        select_year.config(state="disabled")
-        
-        username_entry.delete(0, tk.END)
-        username_entry.config(state="disabled")
-        
-        information.set("")
-        information.config(state="disabled")
-
-    elif selected_type == "events":
-        id_types.config(values=["Location ID"], state="readonly")
-        select_year.set("")
-        select_year.config(state="disabled")
-
-        #profile_entry.delete(0, tk.END)
-        #profile_entry.config(state="disabled")
-        
-        username_entry.delete(0, tk.END)
-        username_entry.config(state="disabled")
-        
-        information.set("")
-        information.config(state="disabled")
-
-    elif selected_type == "account":
-        username_entry.config(state="normal")
-        information.config(state="readonly", values=list(UNAME_INFORMATION_MAP.keys()))
-        id_entry.delete(0, tk.END)
-        id_entry.config(state="disabled")
-        keyword_entry.delete(0, tk.END)
-        keyword_entry.config(state="disabled")
-        select_year.set("")
-        select_year.config(state="disabled")
-
-    elif selected_type == "search":
-        keyword_entry.config(state="normal")
-        information.config(state="readonly", values=SEARCH)
-        id_entry.delete(0, tk.END)
-        id_entry.config(state="disabled")
-        select_year.set("")
-        select_year.config(state="disabled")
-        username_entry.delete(0, tk.END)
-        username_entry.config(state="disabled")
-
-    else:
-        id_types.config(state="disabled")
-
-    return selected_type
-
-
-def get_ids(event=None):
-    selected_id = id_types.get().lower()
-
-    if selected_id == "user id" or  selected_id == "location id":
-        id_entry.config(state="normal")
-        keyword_entry.config(state="normal")
-
-    elif selected_id == "employer id" or selected_id == "city id" or selected_id == "school id":
-        id_entry.config(state="normal")     
-    
-    else:
-        id_entry.config(state="disabled")
-    
     return
 
 
+class WidgetLogicController:
+    def __init__ (self, widgets):
+        self.widgets = widgets
+        self.widget_disable = DisableWidgets(self.widgets)
 
-search_label = tk.Label(root, text="Search Type:")
-search_label.grid(row=0, column=0, padx=10, pady=15, sticky="E")
+    def _setup_posts_photos_videos_widgets(self):
+        self.widget_disable.disable_id_entry()
+        self.widgets.id_type_combobox.config(value=POSTS_PHOTOS_VIDEOS_ID_TYPES, state="readonly")
+        self.widgets.year_selection_combobox.config(value=YEAR_SELECTION, state="readonly")
+        self.widgets.year_selection_combobox.set("Top")
+        self.widgets.keyword_entry.config(state="normal")
 
-search_types = ttk.Combobox(root,
-                            values=["Posts", "Photos", "Videos", "People", "Places", "Events", "Account", "Search"],
-                            state="readonly")
-search_types.grid(row=0, column=1, sticky="W")
-search_types.bind("<<ComboboxSelected>>", display_ids)
-
-id_label = tk.Label(root, text="ID Type:")
-id_label.grid(row=1, column=0, padx=10, pady=15, sticky="E")
-
-id_types = ttk.Combobox(root, state="disabled")
-id_types.grid(row=1, column=1, sticky="W")
-id_types.bind("<<ComboboxSelected>>", get_ids)
-
-id_entry_label = tk.Label(root, text="ID:")
-id_entry_label.grid(row=1, column=2, padx=10, sticky="E")
-id_entry = tk.Entry(root, state="disabled")
-id_entry.grid(row=1, column=3, sticky="W")
-
-keyword_label = tk.Label(root, text="Keyword:")
-keyword_label.grid(row=2, column=0, padx=10, sticky="E")
-keyword_entry = tk.Entry(root, state="disabled")
-keyword_entry.grid(row=2, column=1, sticky="W")
-
-#profile_label = tk.Label(root, text="Profile Name:")
-#profile_label.grid(row=2, column=2, padx=10)
-#profile_entry = tk.Entry(root, state="disabled")
-#profile_entry.grid(row=2, column=3)
-
-year_label = tk.Label(root, text="Year:")
-year_label.grid(row=2, column=2, padx=10, sticky="E")
-select_year = ttk.Combobox(root, values=["Top", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010"],state="disabled")
-select_year.grid(row=2, column=3, sticky="W")
-
-username_label = tk.Label(root, text="Account:")
-username_label.grid(row=3, column=0, padx=10, pady=15, sticky="E")
-username_entry = tk.Entry(root, state="disabled")
-username_entry.grid(row=3, column=1, sticky="W")
-
-information_label = tk.Label(root, text="Section:")
-information_label.grid(row=3, column=2, padx=10, sticky="E")
-information = ttk.Combobox(root, state="disabled")
-information.grid(row=3, column=3, sticky="W")
+        self.widget_disable.disable_account_entry()
+        self.widget_disable.disable_section_combobox()
 
 
-output_frame = tk.Frame(root)
-output_frame.grid(row=5, column=0, columnspan=6, sticky="EW", padx=20)
-output_label = tk.Text(output_frame, wrap="char")
-output_label.pack(fill="both")
-output_label.config(height=15)
-output_label.config(state="disabled")
+    def _setup_people_widgets(self):
+        self.widgets.id_type_combobox.config(values=PEOPLE_ID_TYPES, state="readonly")
+        self.widgets.keyword_entry.config(state="normal")
+
+        self.widget_disable.disable_year_selection()
+        self.widget_disable.disable_account_entry()
+        self.widget_disable.disable_section_combobox()
+
+    def _setup_places_widgets(self):
+        self.widgets.keyword_entry.config(state="normal")
+
+        self.widget_disable.disable_id_type_combobox()
+        self.widget_disable.disable_id_entry()
+        self.widget_disable.disable_year_selection()
+        self.widget_disable.disable_account_entry()
+        self.widget_disable.disable_section_combobox()
+
+    def _setup_events_widgets(self):
+        self.widgets.id_type_combobox.config(values=EVENTS_ID_TYPES, state="readonly")
+        self.widgets.id_type_combobox.set(EVENTS_ID_TYPES[0])
+        self.widgets.id_entry.config(state="normal")
+        self.widgets.keyword_entry.config(state="normal")
+
+        self.widget_disable.disable_year_selection()
+        self.widget_disable.disable_account_entry()
+        self.widget_disable.disable_section_combobox()
+
+    def _setup_account_widgets(self):
+        self.widgets.account_entry.config(state="normal")
+        self.widgets.section_combobox.config(state="readonly", values=list(ACCOUNT_INFORMATION_MAP.keys()))
+
+        self.widget_disable.disable_id_entry()
+        self.widget_disable.disable_keyword_entry()
+        self.widget_disable.disable_year_selection()
+
+    def _setup_search_widgets(self):
+        self.widgets.keyword_entry.config(state="normal")
+        self.widgets.section_combobox.config(state="readonly", values=SEARCH_QUERY_SELECTION)
+
+        self.widget_disable.disable_id_type_combobox()
+        self.widget_disable.disable_id_entry()
+        self.widget_disable.disable_year_selection()
+        self.widget_disable.disable_account_entry()
 
 
-display_ids()
-get_ids()
+    def search_type_logic(self, event=None):
+        self.widgets.id_type_combobox.set("")
+        self.widgets.id_type_combobox.config(state="disabled")
+        self.selected_type = self.widgets.search_type_combobox.get().lower()
+        
+        if self.selected_type == "posts" or self.selected_type == "photos" or \
+            self.selected_type == "videos":
+            self._setup_posts_photos_videos_widgets()
+        elif self.selected_type == "people":
+            self._setup_people_widgets()
+        elif self.selected_type == "places":
+            self._setup_places_widgets()
+        elif self.selected_type == "events":
+            self._setup_events_widgets()
+        elif self.selected_type == "account":
+            self._setup_account_widgets()
+        elif self.selected_type == "search":
+            self._setup_search_widgets()
+        else:
+            self.widget_disable.disable_id_type_combobox()
+            
+
+    
+    
+    def id_type_logic(self, event=None):
+        self.selected_id = self.widgets.id_type_combobox.get().lower()
+        if self.selected_id == "user id" or self.selected_id == "location id":
+            self.widgets.id_entry.config(state="normal")
+
+        elif self.selected_id == "employer id" or self.selected_id == "city id" \
+            or self.selected_id == "location id":
+            self.widgets.id_entry.config(state="normal")
+        else:
+            self.widgets.id_entry.config(state="disabled")
 
 
-generate_button = tk.Button(root,
-                            text="Generate URL",
-                            command=generate_url,
-                            width=20)
-generate_button.grid(row=4, column=0, columnspan=2, padx=5, pady=20)
+class DisableWidgets:
+
+    def __init__(self, widgets):
+        self.widgets = widgets
+
+    def disable_id_type_combobox(self):
+        self.widgets.id_type_combobox.set("")
+        self.widgets.id_type_combobox.config(state="disabled")
+
+    def disable_id_entry(self):
+        self.widgets.id_entry.delete(first=0, last="end")
+        self.widgets.id_entry.config(state="disabled")
+
+    def disable_keyword_entry(self):
+        self.widgets.keyword_entry.delete(first=0, last="end")
+        self.widgets.keyword_entry.config(state="disabled")
+
+    def disable_year_selection(self):
+        self.widgets.year_selection_combobox.set("")
+        self.widgets.year_selection_combobox.config(state="disabled")
+
+    def disable_account_entry(self):
+        self.widgets.account_entry.delete(first=0, last="end")
+        self.widgets.account_entry.config(state="disabled")
+
+    def disable_section_combobox(self):
+        self.widgets.section_combobox.set("")
+        self.widgets.section_combobox.config(state="disabled")
 
 
 
+class GenerateWidgets:
+
+    def __init__(self, root):
+        self.root = root
+        self._root_setup()
+        self.widget_controller = WidgetLogicController(self)
+
+    def _root_setup(self):
+        self.root.title("Social Media Search Tool")
+        self.root.geometry("690x500")
+        window_icon = tk.PhotoImage(file="logo.png")
+        self.root.iconphoto(True, window_icon)
+
+    def display_widgets(self):
+        self.search_type_widgets()
+        self.id_type_widgets()
+        self.id_entry_widgets()
+        self.keyword_widgets()
+        self.year_selection_widgets()
+        self.account_widgets()
+        self.section_widgets()
+        self.generate_button()
+        self.output_widgets()
+
+    def search_type_widgets(self):
+        search_type_label = tk.Label(self.root, text=WIDGET_LABEL_MAP["search_type"])
+        search_type_label.grid(row=0, column=0, padx=10, pady=15, sticky="E")
+        self.search_type_combobox = ttk.Combobox(self.root, values=SEARCH_TYPE_SELECTION, state="readonly")
+        self.search_type_combobox.grid(row=0, column=1, sticky="W")
+        self.search_type_combobox.bind("<<ComboboxSelected>>", func=self.widget_controller.search_type_logic)
+
+    def id_type_widgets(self):
+        id_type_label = tk.Label(self.root, text=WIDGET_LABEL_MAP["id_type"])
+        id_type_label.grid(row=1, column=0, padx=10, pady=15, sticky="E")
+        self.id_type_combobox = ttk.Combobox(self.root, state="disabled")
+        self.id_type_combobox.grid(row=1, column=1, sticky="W")
+        self.id_type_combobox.bind("<<ComboboxSelected>>", func=self.widget_controller.id_type_logic)
+
+    def id_entry_widgets(self):
+        id_entry_label = tk.Label(self.root, text=WIDGET_LABEL_MAP["id_value"])
+        id_entry_label.grid(row=1, column=2, padx=10, sticky="E")
+        self.id_entry = tk.Entry(self.root, state="disabled")
+        self.id_entry.grid(row=1, column=3, sticky="W")
+
+    def keyword_widgets(self):
+        keyword_label = tk.Label(self.root, text=WIDGET_LABEL_MAP["keyword"])
+        keyword_label.grid(row=2, column=0, padx=10, sticky="E")
+        self.keyword_entry = tk.Entry(self.root, state="disabled")
+        self.keyword_entry.grid(row=2, column=1, sticky="W")
+
+    def year_selection_widgets(self):
+        year_selection_label = tk.Label(self.root, text=WIDGET_LABEL_MAP["year"])
+        year_selection_label.grid(row=2, column=2, padx=10, sticky="E")
+        self.year_selection_combobox = ttk.Combobox(self.root, state="disabled")
+        self.year_selection_combobox.grid(row=2, column=3, sticky="W")
+
+    def account_widgets(self):
+        account_label = tk.Label(self.root, text=WIDGET_LABEL_MAP["account"])
+        account_label.grid(row=3, column=0, padx=10, pady=15, sticky="E")
+        self.account_entry = tk.Entry(self.root, state="disabled")
+        self.account_entry.grid(row=3, column=1, sticky="W")
+
+    def section_widgets(self):
+        section_label = tk.Label(self.root, text=WIDGET_LABEL_MAP["section"])
+        section_label.grid(row=3, column=2, padx=10, sticky="E")
+        self.section_combobox = ttk.Combobox(self.root, state="disabled")
+        self.section_combobox.grid(row=3, column=3, sticky="W")
+
+    def generate_button(self):
+        self.generate_button = tk.Button(self.root, text=WIDGET_LABEL_MAP["generate_button"],
+                                    command=generate_url, width=20)
+        self.generate_button.grid(row=4, column=0, columnspan=2, padx=5, pady=20)
+
+    def output_widgets(self):
+        output_frame = tk.Frame(self.root)
+        output_frame.grid(row=5, column=0, columnspan=6, sticky="EW", padx=20)
+        self.output_label = tk.Text(output_frame, wrap="char")
+        self.output_label.pack(fill="both")
+        self.output_label.config(height=15)
+        self.output_label.config(state="disabled")
 
 
-
-
-root.geometry("690x500")
-icon = tk.PhotoImage(file="logo.png")
-root.iconphoto(True, icon)
+root = tk.Tk()
+widgets = GenerateWidgets(root)
+widgets.display_widgets()
 root.mainloop()
