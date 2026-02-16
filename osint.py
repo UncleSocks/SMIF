@@ -106,9 +106,9 @@ class ConstructFbUrl:
 
     def _creation_time_json(self):
         creation_time_args = {
-            "start_year":f"{self.selected_year}",
+            "start_year":self.selected_year,
             "start_month":f"{self.selected_year}-1",
-            "end_year":f"{self.selected_year}",
+            "end_year":self.selected_year,
             "end_month":f"{self.selected_year}-12",
             "start_day":f"{self.selected_year}-1-1",
             "end_day":f"{self.selected_year}-12-31"
