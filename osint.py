@@ -479,7 +479,8 @@ class GenerateWidgets:
         self.output_label.config(state="disabled")
 
 
-root = tk.Tk()
-widgets = GenerateWidgets(root)
-widgets.display_widgets()
-root.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    widgets = GenerateWidgets(root)
+    widgets.display_widgets()
+    root.mainloop()
