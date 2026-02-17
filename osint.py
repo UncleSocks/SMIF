@@ -91,13 +91,15 @@ def encode(filter_string):
 
 class ConstructFbUrl:
 
-    def __init__(self, selected_type, widgets):
+    def __init__(self, selected_type, selected_id=None, id_value=None, 
+                 keyword=None, selected_year=None, account=None, section=None):
         self.selected_type = selected_type
-        self.widgets = widgets
-
-    def _capture_misc_fields(self):
-        self.keyword = (quote(self.widgets.keyword_entry.get().lower() if self.widgets.keyword_entry.get() else self.selected_type))
-        self.selected_year = self.widgets.year_selection_combobox.get().lower()
+        self.selected_id = selected_id
+        self.id_value = id_value
+        self.keyword = quote(keyword if keyword else self.selected_type)
+        self.selected_year = selected_year
+        self.account = account
+        self.section = section
 
     def _build_filtered_url(self, url_path, raw_filter_dict):
         raw_filter = json.dumps(raw_filter_dict)
@@ -223,38 +225,28 @@ class ConstructFbUrl:
         if self.selected_type == "posts" or self.selected_type == "photos" \
             or self.selected_type == "videos" or self.selected_type == "events" \
                 or self.selected_type == "people":
-            selected_id = self.widgets.id_type_combobox.get().lower()
-            
-            id_value = self.widgets.id_entry.get().lower()
-            if selected_id == "user id":
-                self._capture_misc_fields()
-                new_fb_url = self._construct_user_id_url(id_value)
+
+            if self.selected_id == "user id":
+                new_fb_url = self._construct_user_id_url(self.id_value)
                 return new_fb_url
-            elif selected_id == "location id":
-                self._capture_misc_fields()
-                new_fb_url = self._construct_location_id_url(id_value)
+            elif self.selected_id == "location id":
+                new_fb_url = self._construct_location_id_url(self.id_value)
                 return new_fb_url
-            elif selected_id == "employer id" or  selected_id == "city id" \
-                or selected_id == "school id":
-                self._capture_misc_fields()
-                new_fb_url = self._construct_people_url(selected_id, id_value)
+            elif self.selected_id == "employer id" or  self.selected_id == "city id" \
+                or self.selected_id == "school id":
+                new_fb_url = self._construct_people_url(self.selected_id, self.id_value)
                 return new_fb_url
 
         elif self.selected_type == "account":
-            account = self.widgets.account_entry.get().lower()
-            section = self.widgets.section_combobox.get()
-            new_fb_url = self._construct_account_url(account, section)
+            new_fb_url = self._construct_account_url(self.account, self.section)
             return new_fb_url
         
         elif self.selected_type == "places":
-            self._capture_misc_fields()
             new_fb_url = self._construct_places_url()
             return new_fb_url
         
         elif self.selected_type == "search":
-            self._capture_misc_fields()
-            section = self.widgets.section_combobox.get().lower()
-            new_fb_url = self._construct_search_url(section)
+            new_fb_url = self._construct_search_url(self.section)
             return new_fb_url
         
         else:
@@ -263,8 +255,16 @@ class ConstructFbUrl:
 
 def generate_url(widgets):
     selected_type = widgets.search_type_combobox.get().lower()
+    captured_widget_data = {
+        "selected_id":widgets.id_type_combobox.get().lower(),
+        "id_value":widgets.id_entry.get().lower(),
+        "keyword":widgets.keyword_entry.get().lower(),
+        "selected_year":widgets.year_selection_combobox.get().lower(),
+        "account":widgets.account_entry.get().lower(),
+        "section":widgets.section_combobox.get()
+    }
     if selected_type:
-        fb_url = ConstructFbUrl(selected_type, widgets).construct_fb_url()
+        fb_url = ConstructFbUrl(selected_type, **captured_widget_data).construct_fb_url()
         pyperclip.copy(fb_url)
         widgets.output_label.config(state="normal")
         widgets.output_label.delete("1.0", "end")
