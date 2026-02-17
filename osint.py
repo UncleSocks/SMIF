@@ -94,11 +94,11 @@ class ConstructFbUrl:
     def __init__(self, selected_type, selected_id=None, id_value=None, 
                  keyword=None, selected_year=None, account=None, section=None):
         self.selected_type = selected_type
-        self.selected_id = selected_id
-        self.id_value = id_value
+        self.selected_id = selected_id.lower()
+        self.id_value = id_value.lower()
         self.keyword = quote(keyword if keyword else self.selected_type)
-        self.selected_year = selected_year
-        self.account = account
+        self.selected_year = selected_year.lower()
+        self.account = account.lower()
         self.section = section
 
     def _build_filtered_url(self, url_path, raw_filter_dict):
@@ -256,11 +256,11 @@ class ConstructFbUrl:
 def generate_url(widgets):
     selected_type = widgets.search_type_combobox.get().lower()
     captured_widget_data = {
-        "selected_id":widgets.id_type_combobox.get().lower(),
-        "id_value":widgets.id_entry.get().lower(),
-        "keyword":widgets.keyword_entry.get().lower(),
-        "selected_year":widgets.year_selection_combobox.get().lower(),
-        "account":widgets.account_entry.get().lower(),
+        "selected_id":widgets.id_type_combobox.get(),
+        "id_value":widgets.id_entry.get(),
+        "keyword":widgets.keyword_entry.get(),
+        "selected_year":widgets.year_selection_combobox.get(),
+        "account":widgets.account_entry.get(),
         "section":widgets.section_combobox.get()
     }
     if selected_type:
