@@ -15,4 +15,4 @@ This is a Python implementation of Facebook Search Tool from IntelTechniques and
  - Generic Search
 
 ## Additional Developments
-This is still being polished. The tool will also support other social media, such as Twitter (X) and Instagram.
+Please note that the current version only supports Facebook. More social media websites will be supported in the future.
