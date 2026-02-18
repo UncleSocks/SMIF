@@ -1,6 +1,5 @@
-# PySMST: Python Social Media Search Tool
+# SocialIntPy: Python Social Media Intelligence Search Tool 
 
-*Still under development.
 
 ![2026-02-1122-01-13-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/373909c2-f38c-46bf-8db0-b2122cd60006)
 
