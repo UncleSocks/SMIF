@@ -30,5 +30,6 @@ After June 2019, Facebook has implemented _Base64-encoded JSON-structured querie
 
 **IMPORTANT NOTE:** With that in mind, some of the search types may not provide accurate results (or at all) and may even suddenly be unsupported.
 
-## Additional Developments
-I'm planning to consolidate other social media websites (i.e., X, Instagram, and LinkedIn) into one search tool.
+## Additional Developments and Known Issues
+- I'm planning to consolidate other social media websites (i.e., X, Instagram, and LinkedIn) into one search tool.
+- There is a known issue with one of its dependencies, **pyperclip**, where Python Interpreter version 3.10 needs to be used for it to work.
