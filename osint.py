@@ -8,6 +8,10 @@ from urllib.parse import quote
 
 
 
+WINDOW_TITLE = "SocialIntPy: Python Social Media Intelligence Search Tool"
+WINDOW_DIMENSION = "690x500"
+WINDOW_ICON = "logo.png"
+
 WIDGET_LABEL_MAP = {
     "search_type":"Search Type:",
     "id_type":"ID Type:",
@@ -366,9 +370,9 @@ class GenerateWidgets:
         self.widget_controller = WidgetLogicController(self)
 
     def _root_setup(self):
-        self.root.title("Social Media Search Tool")
-        self.root.geometry("690x500")
-        window_icon = tk.PhotoImage(file="logo.png")
+        self.root.title(WINDOW_TITLE)
+        self.root.geometry(WINDOW_DIMENSION)
+        window_icon = tk.PhotoImage(file=WINDOW_ICON)
         self.root.iconphoto(True, window_icon)
 
     def display_widgets(self):
