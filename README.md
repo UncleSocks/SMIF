@@ -4,7 +4,13 @@
 
 In a nutshell, this tool supports the following filter types: **Posts**, **Photos**, **Videos**, **People**, **Events**, **User/Profile Information**, and **Global Search**. Some of these types also supports the addition of keywords and dates.
 
-![2026-02-1122-01-13-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/373909c2-f38c-46bf-8db0-b2122cd60006)
+## Generating A URL (How to Use)
+Simply select one of the search types and it will enable the supported fields. Once the required fields are completed, click the **Generate URL** button to create the filtered URL. This will automatically be copied to your clipboard -- paste it to a web browser and it will display the results of the query. 
+
+**NOTE:** It is recommended to use the available PE (EXE) file. If running it as a raw Python file, make sure to install all of the dependencies. Furthermore, there is a known issue with one of its dependencies, **pyperclip**, where Python Interpreter version 3.10 needs to be used for it to work.
+
+
+![2026-02-1823-27-04-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/5c53b360-8f14-40db-87a2-8be0ed6d35e3)
 
 
 ## Search Capabilities 
