@@ -4,9 +4,9 @@ import base64
 import json
 import tkinter as tk
 from tkinter import ttk
+from urllib.parse import quote
 
 import pyperclip
-from urllib.parse import quote
 
 
 
